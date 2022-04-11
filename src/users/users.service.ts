@@ -1,7 +1,8 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { Model } from "mongoose";
-//import { User } from "../interfaces/user.interface";
-type User = any;
+import { hashPassword } from "src/auth/helpers";
+import { CreateUserDto, UpdateUserDto } from "src/dtos/users.dto";
+import { User } from "../interfaces/user.interface";
 
 @Injectable()
 export class UsersService {
@@ -10,17 +11,47 @@ export class UsersService {
 		private userModel: Model<User>
 	) {}
 
-	private readonly users = [
-		{
-			userId: 1,
-			username: "admin",
-			password: "password",
-			name: "Rafael",
-			email: "xiaothemes@gmail.com",
-		},
-	];
+	async create(createUser: CreateUserDto): Promise<User> {
+		createUser.password = await hashPassword(createUser.password);
 
-	async findOne(username: string): Promise<User | undefined> {
-		return this.users.find((user) => user.username === username);
+		const createdUser = new this.userModel(createUser);
+		return createdUser.save();
+	}
+
+	async listAll(): Promise<User[]> {
+		const users = await this.userModel.find({});
+
+		return users;
+	}
+
+	async findOneByUsername(username: string): Promise<User> {
+		const user = await this.userModel.findOne({ username: username });
+
+		return user;
+	}
+
+	async patch(id: string, updateUser: UpdateUserDto): Promise<User> {
+		const { email, name, username, password } = updateUser;
+		const updatedFields: UpdateUserDto = {
+			...(email && { email }),
+			...(name && { name }),
+			...(username && { username }),
+		};
+
+		if (password) {
+			updatedFields.password = await hashPassword(password);
+		}
+
+		await this.userModel.findByIdAndUpdate(id, updatedFields);
+
+		const user = await this.userModel.findOne({ _id: id });
+
+		return user;
+	}
+
+	async delete(id: string): Promise<boolean> {
+		const deleted = await this.userModel.deleteOne({ _id: id });
+
+		return deleted.deletedCount > 0;
 	}
 }

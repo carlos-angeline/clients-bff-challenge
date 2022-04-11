@@ -15,12 +15,12 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
-	name: string;
+	name?: string;
 
-	username: string;
+	username?: string;
 
 	@IsEmail()
-	email: string;
+	email?: string;
 
-	password: string;
+	password?: string;
 }
