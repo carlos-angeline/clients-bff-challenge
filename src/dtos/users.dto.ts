@@ -24,3 +24,9 @@ export class UpdateUserDto {
 
 	password?: string;
 }
+
+export class UserResponseDto {
+	name: string;
+	username: string;
+	email: string;
+}
