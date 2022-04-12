@@ -13,8 +13,8 @@ import {
 	CreateProductDto,
 	UpdateProductDto,
 	ProductResponseDto,
-} from "src/dtos/products.dto";
-import { Product } from "src/interfaces/product.interface";
+} from "../dtos/products.dto";
+import { Product } from "../interfaces/product.interface";
 import { ProductsService } from "./products.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";

@@ -13,8 +13,8 @@ import {
 	CreateUserDto,
 	UpdateUserDto,
 	UserResponseDto,
-} from "src/dtos/users.dto";
-import { User } from "src/interfaces/user.interface";
+} from "../dtos/users.dto";
+import { User } from "../interfaces/user.interface";
 import { UsersService } from "./users.service";
 
 @ApiTags("users")
