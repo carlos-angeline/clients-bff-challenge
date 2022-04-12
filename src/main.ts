@@ -20,7 +20,7 @@ async function bootstrap() {
 		.setTitle("Clients Service")
 		.setDescription("The clients API.")
 		.setVersion("1.0")
-		.addTag("clients")
+		.addBearerAuth()
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup("swagger", app, document);

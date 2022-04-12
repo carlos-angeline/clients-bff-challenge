@@ -8,6 +8,7 @@ import {
 	Body,
 	HttpException,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import {
 	CreateUserDto,
 	UpdateUserDto,
@@ -16,6 +17,7 @@ import {
 import { User } from "src/interfaces/user.interface";
 import { UsersService } from "./users.service";
 
+@ApiTags("users")
 @Controller({
 	path: "users",
 	version: "1",
@@ -36,8 +38,7 @@ export class UsersController {
 	}
 
 	@Get(":username")
-	async findOne(@Param() params): Promise<UserResponseDto> {
-		const username = params.username ?? false;
+	async findOne(@Param("username") username: string): Promise<UserResponseDto> {
 		if (!username) {
 			throw new HttpException("Username not provided.", 400);
 		}
@@ -64,14 +65,14 @@ export class UsersController {
 
 	@Patch(":id")
 	async patchOne(
-		@Param() params,
+		@Param("id") id: string,
 		@Body() updateUser: UpdateUserDto
 	): Promise<UpdateUserDto> {
-		if (params.id == "id") {
+		if (id == "id") {
 			throw new HttpException("No record found with Id.", 500);
 		}
 
-		const patchedUser = await this.usersService.patch(params.id, updateUser);
+		const patchedUser = await this.usersService.patch(id, updateUser);
 
 		// Remove password from returned obj.
 		const { password, ...resUser } = patchedUser.toObject();
@@ -80,12 +81,12 @@ export class UsersController {
 	}
 
 	@Delete(":id")
-	async deleteOne(@Param() params): Promise<Object> {
-		if (params.id == "id") {
+	async deleteOne(@Param("id") id: string): Promise<Object> {
+		if (id == "id") {
 			throw new HttpException("No record found with Id.", 500);
 		}
 
-		const isDeleted = await this.usersService.delete(params.id);
+		const isDeleted = await this.usersService.delete(id);
 
 		if (!isDeleted) {
 			throw new HttpException("User can not be deleted.", 500);

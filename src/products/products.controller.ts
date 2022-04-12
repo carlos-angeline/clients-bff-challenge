@@ -17,7 +17,10 @@ import {
 import { Product } from "src/interfaces/product.interface";
 import { ProductsService } from "./products.service";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("products")
+@ApiBearerAuth()
 @Controller({
 	path: "products",
 	version: "1",
@@ -35,8 +38,7 @@ export class ProductsController {
 
 	@UseGuards(JwtAuthGuard)
 	@Get(":sku")
-	async findOne(@Param() params): Promise<ProductResponseDto> {
-		const sku = params.sku ?? false;
+	async findOne(@Param("sku") sku: string): Promise<ProductResponseDto> {
 		if (!sku) {
 			throw new HttpException("SKU not provided.", 400);
 		}
@@ -63,29 +65,26 @@ export class ProductsController {
 	@UseGuards(JwtAuthGuard)
 	@Patch(":id")
 	async patchOne(
-		@Param() params,
+		@Param("id") id: string,
 		@Body() updateUser: UpdateProductDto
 	): Promise<UpdateProductDto> {
-		if (params.id == "id") {
+		if (id == "id") {
 			throw new HttpException("No record found with Id.", 500);
 		}
 
-		const patchedProduct = await this.productsService.patch(
-			params.id,
-			updateUser
-		);
+		const patchedProduct = await this.productsService.patch(id, updateUser);
 
 		return patchedProduct;
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@Delete(":id")
-	async deleteOne(@Param() params): Promise<Object> {
-		if (params.id == "id") {
+	async deleteOne(@Param("id") id: string): Promise<Object> {
+		if (id == "id") {
 			throw new HttpException("No record found with Id.", 500);
 		}
 
-		const isDeleted = await this.productsService.delete(params.id);
+		const isDeleted = await this.productsService.delete(id);
 
 		if (!isDeleted) {
 			throw new HttpException("Product can not be deleted.", 500);
